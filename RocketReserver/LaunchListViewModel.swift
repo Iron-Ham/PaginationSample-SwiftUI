@@ -75,7 +75,6 @@ final class LaunchListViewModel: ObservableObject {
     }
   }
 
-  @MainActor
   private func execute(operation: () async -> Void) async {
     do {
       try Task.checkCancellation()
