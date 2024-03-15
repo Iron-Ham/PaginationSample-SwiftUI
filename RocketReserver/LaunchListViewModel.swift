@@ -55,26 +55,23 @@ final class LaunchListViewModel: ObservableObject {
 
   func refresh() async {
     await execute {
-      await MainActor.run { self.loadState = .refresh }
+      loadState = .refresh
       await pager?.refetch()
-      await MainActor.run { self.loadState = .idle }
     }
   }
 
   func fetch() async {
     await execute {
-      await MainActor.run { self.loadState = .initial }
+      loadState = .initial
       await pager?.fetch()
-      await MainActor.run { self.loadState = .idle }
     }
   }
 
   func loadNextPage() async {
     await execute {
       guard await canLoadNext, loadState != .tail else { return }
-      await MainActor.run { self.loadState = .tail }
+      loadState = .tail
       try? await pager?.loadNext()
-      await MainActor.run { self.loadState = .idle }
     }
   }
 
@@ -83,6 +80,7 @@ final class LaunchListViewModel: ObservableObject {
     do {
       try Task.checkCancellation()
       await operation()
+      loadState = .idle
     } catch {
       loadState = .idle
     }
